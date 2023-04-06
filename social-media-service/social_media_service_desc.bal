@@ -1,21 +1,6 @@
-import ballerina/constraint;
 import ballerina/http;
 import ballerina/sql;
 import ballerina/time;
-
-type SocialMedia service object {
-    *http:Service;
-
-    // users resource
-    resource function get users() returns User[]|error;
-    resource function get users/[int id]() returns User|UserNotFound|error;
-    resource function post users(@http:Payload NewUser newUser) returns http:Created|error;
-    resource function delete users/[int id]() returns http:NoContent|error;
-
-    // posts resource
-    resource function get users/[int id]/posts() returns PostWithMeta[]|UserNotFound|error;
-    resource function post users/[int id]/posts(@http:Payload NewPost newPost) returns http:Created|UserNotFound|PostForbidden|error;
-};
 
 // user representations
 type User record {|
@@ -28,15 +13,19 @@ type User record {|
 |};
 
 public type NewUser record {|
-    @constraint:String {
-        minLength: 2
-    }
     string name;
     time:Date birthDate;
     string mobileNumber;
 |};
 
-type UserNotFound record {|
+type RecordCreated record {|
+    *http:Created;
+    record {
+        string message;
+    } body;
+|};
+
+type RecordNotFound record {|
     *http:NotFound;
     ErrorDetails body;
 |};
@@ -51,15 +40,11 @@ type Post record {|
     time:Date created_date;
 |};
 
-type PostWithMeta record {|
-    int id;
+type PostWithUser record {|
+    string name;
     string description;
-    record {|
-        string[] tags;
-        string category;
-        @sql:Column {name: "created_date"}
-        time:Date created_date;
-    |} meta;
+    string category;
+    time:Date created_date;    
 |};
 
 public type NewPost record {|
@@ -68,9 +53,11 @@ public type NewPost record {|
     string category;
 |};
 
-type PostForbidden record {|
-    *http:Forbidden;
-    ErrorDetails body;
+type BatchCreated record {|
+    *http:Created;
+    record {
+        string[] messages;
+    } body;
 |};
 
 type ErrorDetails record {|
