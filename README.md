@@ -1,8 +1,8 @@
 # [Ballerina] Social Media Service
 
-The sample is based on a simple API written for a social-media site (like twitter) which has users, associated posts and followers. Following is the high level component diagram.
+Welcome to this introduction to Ballerina DB connectors. Ballerina has built-in connectors for a set of relational databases like MySQL, Oracle, SQL Server, and PostgreSQL. Ballerina also has jdbc client connector to connect with any relational database. In this video, we'll demonstrate how to use Ballerina to access and manipulate relational databases using the MySQL connector as an example. 
 
-<img src="diagram.png" alt="drawing" width='500'/>
+The sample is based on a simple API written for a social-media site (like twitter) which has users, associated posts and followers. The API allows users to register, post, and follow other users. The API is written using Ballerina and uses a MySQL database to store the data.
 
 Following is the entity relationship diagram.
 
@@ -23,27 +23,33 @@ type SocialMedia service object {
     // posts resource
     resource function get users/[int id]/posts() returns PostMeta[]|UserNotFound|error;
     resource function post users/[int id]/posts(@http:Payload NewPost newPost) returns http:Created|UserNotFound|PostForbidden|error;
+
+    // batch posts resource
+    resource function post users/[int id]/posts(@http:Payload NewPost[] newPost) returns http:Created|UserNotFound|PostForbidden|error;
+
+    // insert two users and add follwer resource
+    
+
 };
 ```
 
 Following are the features covered by the scenario.
 
-1. Writing REST APIs with verbs, URLs, data binding and status codes
-2. Accessing databases
-3. Configurability
-4. Data transformation with the data mapper
-5. HTTP client
-6. Resiliency - Retry
-7. Writing tests
-8. Using connectors - Twilio
-9. OpenAPI specification, client stubs and central
-10. Adding validations
-11. Security - OAuth2
-12. Error handlers
-13. Ballerina concurrency
-14. Integrating a message broker
-15. Observability - Tracing
-16. Docker image generation
+1. RBMS Data Access and Manipulation
+2. Batch Operations and Stored Procedures
+3. Transaction Handling
+4. Persistence support for Ballerina data types
+
+# Tutorial Steps
+
+1. [Setup the environment](#setup-the-environment)
+
+Setting up the environment for the Ballerina DB connectors, including the database and the Ballerina project. For this scenario, we will use MySQL as the database. you either can use the docker image or install the MySQL server locally.
+
+Once you have the database up and running, you can create the database and the required tables using the SQL script below.
+
+```sql
+
 
 # Setup each environment
 
@@ -52,4 +58,3 @@ You can use the below docker compose commands.
 
 # Try out
 - To send request open `social-media-request.http` file using VS Code with `REST Client` extension
-- Jaeger URL - http://localhost:16686/search

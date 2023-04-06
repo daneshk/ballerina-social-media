@@ -1,9 +1,15 @@
-CREATE TABLE social_media_database.users (
-    id INT NOT NULL auto_increment PRIMARY KEY,
-    birth_date DATE,
+DROP DATABASE if exists social_media_database;
+
+CREATE DATABASE social_media_database;
+
+USE social_media_database;
+
+CREATE TABLE users (
+    `id` INT NOT NULL auto_increment PRIMARY KEY,
+    `birth_date` DATE,
     name VARCHAR(255)
 );
-CREATE TABLE social_media_database.posts (
+CREATE TABLE posts (
     id INT NOT NULL auto_increment PRIMARY KEY,
     description VARCHAR(255),
     category VARCHAR(255),
@@ -11,11 +17,11 @@ CREATE TABLE social_media_database.posts (
     tags VARCHAR(255),
     user_id INT
 );
-ALTER TABLE social_media_database.posts ADD FOREIGN KEY (user_id) REFERENCES social_media_database.users(id) ON DELETE CASCADE;
+ALTER TABLE posts ADD FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
-ALTER TABLE social_media_database.users ADD mobile_number VARCHAR(15) NOT NULL;
+ALTER TABLE users ADD mobile_number VARCHAR(15) NOT NULL;
 
-INSERT INTO social_media_database.users (
+INSERT INTO users (
         id,
         birth_date,
         name,
@@ -27,7 +33,7 @@ VALUES (
         "ranga",
         "+94771234001"
     );
-INSERT INTO social_media_database.users (
+INSERT INTO users (
         id,
         birth_date,
         name,
@@ -39,7 +45,7 @@ VALUES (
         "ravi",
         "+94771234002"
     );
-INSERT INTO social_media_database.users (
+INSERT INTO users (
         id,
         birth_date,
         name,
@@ -51,7 +57,7 @@ VALUES (
         "satish",
         "+94771234001"
     );
-INSERT INTO social_media_database.users (
+INSERT INTO users (
         id,
         birth_date,
         name,
@@ -63,7 +69,7 @@ VALUES (
         "ayesh",
         "+94768787189"
     );
-INSERT INTO social_media_database.posts (
+INSERT INTO posts (
         description,
         category,
         created_date,
@@ -77,7 +83,7 @@ VALUES (
         'aws,cloud,learn',
         1
     );
-INSERT INTO social_media_database.posts (
+INSERT INTO posts (
         description,
         category,
         created_date,
@@ -91,7 +97,7 @@ VALUES (
         'devops,infra,learn',
         1
     );
-INSERT INTO social_media_database.posts (
+INSERT INTO posts (
         description,
         category,
         created_date,
@@ -105,7 +111,7 @@ VALUES (
         'gcp,google,learn',
         2
     );
-INSERT INTO social_media_database.posts (
+INSERT INTO posts (
         description,
         category,
         created_date,
@@ -119,18 +125,29 @@ VALUES (
         'gcp,aws,azure,infra,learn',
         3
     );
-CREATE TABLE social_media_database.followers (
+CREATE TABLE followers (
     id INT NOT NULL auto_increment PRIMARY KEY,
     created_date DATE,
     leader_id INT,
     follower_id INT,
     UNIQUE (leader_id, follower_id),
-    FOREIGN KEY (leader_id) REFERENCES social_media_database.users(id) ON DELETE CASCADE,
-    FOREIGN KEY (follower_id) REFERENCES social_media_database.users(id) ON DELETE CASCADE
+    FOREIGN KEY (leader_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE
 );
-INSERT INTO social_media_database.followers (
+INSERT INTO followers (
         created_date,
         leader_id,
         follower_id
     )
 VALUES (Curdate(), 1, 4);
+
+CREATE PROCEDURE get_posts_for_user(IN user_id INT, OUT postCount INT)
+BEGIN
+    SELECT COUNT(*) INTO postCount FROM posts WHERE user_id = user_id;
+
+    SELECT user.name, post.description, post.category, post.created_date
+    FROM posts post
+    INNER JOIN users user ON user.id = post.user_id
+    WHERE post.user_id = user_id;
+END;
+
