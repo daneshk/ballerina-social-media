@@ -63,7 +63,7 @@ service /social\-media on new http:Listener(9090) {
         };
     }
 
-    resource function post batchUsers(@http:Payload NewUser[] newUsers) returns BatchCreated|error {
+    resource function post users/batch(@http:Payload NewUser[] newUsers) returns BatchCreated|error {
         // Create a batch parameterized query.
         sql:ParameterizedQuery[] insertQueries = from NewUser newUser in newUsers
             select `INSERT INTO users(birth_date, name, mobile_number)
@@ -82,10 +82,18 @@ service /social\-media on new http:Listener(9090) {
     #
     # + id - The user ID of the user to be deleted
     # + return - The success message or error message
-    resource function delete users/[int id]() returns http:NoContent|error {
-        _ = check socialMediaDb->execute(`
-            DELETE FROM users WHERE id = ${id};`);
-        return http:NO_CONTENT;
+    resource function delete users/[int id]() returns http:NoContent|RecordNotFound|error {
+        sql:ExecutionResult userDelete = check socialMediaDb->execute(`
+            DELETE FROM users WHERE ID = ${id}`);
+        if userDelete.affectedRowCount == 0 {
+            ErrorDetails errorDetails = buildErrorPayload(string `id: ${id}`, string `users/${id}`);
+            RecordNotFound userNotFound = {
+                body: errorDetails
+            };
+            return userNotFound;
+        } else {
+            return http:NO_CONTENT;
+        }
     }
 
     # Get posts for a give user
