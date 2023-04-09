@@ -7,7 +7,15 @@ distribution = "2201.4.1"
 [build-options]
 observabilityIncluded = true
 
-# [[platform.java11.dependency]]
-# artifactId = "h2"
-# version = "2.0.206"
-# groupId = "com.h2database"
+[persist]
+datastore = "mysql"
+module = "social_media"
+
+[[platform.java11.dependency]]
+groupId = "io.ballerina.stdlib"
+artifactId = "persist-native"
+version = "0.2.3"
+
+[[platform.java11.repository]]
+id="wso2-nexus-snapshot"
+url = "https://maven.wso2.org/nexus/content/repositories/snapshots/"

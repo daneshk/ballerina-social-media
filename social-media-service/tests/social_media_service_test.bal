@@ -1,12 +1,11 @@
 import ballerina/test;
 import ballerina/http;
-import ballerinax/mysql;
 
 @test:Mock {
     functionName: "initDbClient"
 }
-function mockInitDbClient() returns mysql:Client|error {
-    return test:mock(mysql:Client);
+function mockInitDbClient() returns Client|error {
+    return test:mock(Client);
 }
 
 @test:Config{}

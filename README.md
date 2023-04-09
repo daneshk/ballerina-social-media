@@ -240,3 +240,4 @@ You can use the below docker compose commands.
 
 # Try out
 - To send request open `social-media-request.http` file using VS Code with `REST Client` extension
+
